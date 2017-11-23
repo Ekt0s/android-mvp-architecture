@@ -16,6 +16,7 @@
 package com.mindorks.framework.mvp.ui.login;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -30,10 +31,13 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 
 /**
  * Created by amitshekhar on 03/02/17.
@@ -77,4 +81,78 @@ public class LoginActivityTest {
         onView(withId(R.id.ib_fb_login))
                 .check(matches(isDisplayed()));
     }
+
+    @Test
+    public void checkErrorWithEmptyEmail() throws InterruptedException {
+        main.launchActivity(LoginActivity.getStartIntent(component.getContext()));
+
+        ViewInteraction emailViewIteraction = onView(withId(R.id.et_email));
+        emailViewIteraction
+                .check(matches(isDisplayed()));
+
+        ViewInteraction passwordViewInteraction = onView(withId(R.id.et_password));
+        passwordViewInteraction
+                .check(matches(isDisplayed()));
+
+        ViewInteraction serverLoginButtonInteraction = onView(withId(R.id.btn_server_login));
+        serverLoginButtonInteraction
+                .check(matches(isDisplayed()));
+
+        onView(withText(R.string.login))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.ib_google_login))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.ib_fb_login))
+                .check(matches(isDisplayed()));
+
+        serverLoginButtonInteraction
+                .perform(click());
+
+        Thread.sleep(500L);
+
+        onView(allOf(withId(android.support.design.R.id.snackbar_text), withText(R.string.empty_email)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void checkErrorWithEmptyPassword() throws InterruptedException {
+        main.launchActivity(LoginActivity.getStartIntent(component.getContext()));
+
+        ViewInteraction emailViewIteraction = onView(withId(R.id.et_email));
+        emailViewIteraction
+                .check(matches(isDisplayed()));
+
+        ViewInteraction passwordViewInteraction = onView(withId(R.id.et_password));
+        passwordViewInteraction
+                .check(matches(isDisplayed()));
+
+        ViewInteraction serverLoginButtonInteraction = onView(withId(R.id.btn_server_login));
+        serverLoginButtonInteraction
+                .check(matches(isDisplayed()));
+
+        onView(withText(R.string.login))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.ib_google_login))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.ib_fb_login))
+                .check(matches(isDisplayed()));
+
+        emailViewIteraction
+                .perform(typeText("dummy@gmail.com"));
+
+        Thread.sleep(1500L);
+
+        serverLoginButtonInteraction
+                .perform(click());
+
+        Thread.sleep(500L);
+
+        onView(allOf(withId(android.support.design.R.id.snackbar_text), withText(R.string.empty_password)))
+                .check(matches(isDisplayed()));
+    }
+
 }
