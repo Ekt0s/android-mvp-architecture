@@ -1,4 +1,5 @@
 # Android MVP Architecture: Sample App
+[![pipeline status](https://gitlab.com/Ekt0s/android-mvp-architecture/badges/master/pipeline.svg)](https://gitlab.com/Ekt0s/android-mvp-architecture/commits/master)
 [![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
 [![Mindorks Community](https://img.shields.io/badge/join-community-blue.svg)](https://mindorks.com/join-community)
 
