@@ -1,0 +1,71 @@
+# This file is a template, and might need editing before it works on your project.
+# Read more about this script on this blog post https://about.gitlab.com/2016/11/30/setting-up-gitlab-ci-for-android-projects/, by Greyson Parrelli
+image: jangrewe/gitlab-ci-android
+
+variables:
+  ANDROID_COMPILE_SDK: "25"
+  ANDROID_BUILD_TOOLS: "25.0.2"
+  ANDROID_SDK_TOOLS: "26.0.2"
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - export GRADLE_USER_HOME=$(pwd)/.gradle
+  - chmod +x ./gradlew
+  - export PATH=$PATH:$ANDROID_HOME/platform-tools
+  - ${ANDROID_HOME}/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+  - ${ANDROID_HOME}/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+
+cache:
+  key: ${$CI_COMMIT_REF_NAME}
+  untracked: true
+  paths:
+  - .gradle/
+  - app/build
+
+build:
+  stage: build
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+    - app/build/outputs/
+
+unitTests:
+  stage: test
+  script:
+    - ./gradlew test
+  artifacts:
+    paths:
+      - build/reports/jacoco/
+
+functionalTests:
+  stage: test
+  allow_failure: true
+  script:
+    - apt-get update ; apt-get install -y libqt5widgets5
+    - curl --silent --output android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
+    - chmod +x android-wait-for-emulator
+    - echo y | /sdk/tools/bin/sdkmanager "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86" --verbose
+    - echo no | /sdk/tools/bin/avdmanager create avd --package "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86" --name test
+    - /sdk/emulator/emulator64-x86 -avd test -no-boot-anim -no-window -no-audio -no-accel -gpu off &
+    - sleep 2 ; adb devices
+    - ./android-wait-for-emulator ; adb devices
+#    - adb shell input keyevent 82
+    - ./gradlew cAT
+
+pages:
+  stage: deploy
+  dependencies:
+    - unitTests
+  script:
+   - mkdir public
+   - mv build/reports/jacoco/jacocoTestDebugUnitTestReport/html/* public
+  artifacts:
+    paths:
+      - public
+  only:
+  - master

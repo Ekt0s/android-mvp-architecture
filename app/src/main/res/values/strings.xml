@@ -40,7 +40,7 @@
     <string name="connection_error">Internet connection lost!</string>
 
     <!--Login-->
-    <string name="login_dummy">Login Dummy</string>
+    <string name="login_dummy">Login</string>
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
