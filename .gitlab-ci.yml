@@ -55,7 +55,7 @@ functionalTests:
     - sleep 2 ; adb devices
     - ./android-wait-for-emulator ; adb devices
 #    - adb shell input keyevent 82
-    - ./gradlew cAT
+#    - ./gradlew cAT
 
 pages:
   stage: deploy
