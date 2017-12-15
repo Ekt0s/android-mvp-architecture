@@ -63,7 +63,7 @@ pages:
     - unitTests
   script:
    - mkdir public
-   - mv build/reports/jacoco/jacocoTestDebugUnitTestReport/html/* public
+   - mv app/build/reports/* public
   artifacts:
     paths:
       - public
