@@ -32,7 +32,7 @@ build:
     - ./gradlew assembleDebug
   artifacts:
     paths:
-    - app/build/outputs/
+    - app/build/outputs/apk
 
 unitTests:
   stage: test
@@ -63,6 +63,7 @@ pages:
     - unitTests
   script:
    - mkdir public
+   - ls -la app/build/reports
    - mv app/build/reports/* public
   artifacts:
     paths:
