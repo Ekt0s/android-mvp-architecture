@@ -63,7 +63,7 @@ pages:
     - unitTests
   script:
    - mkdir public
-   - ls -ladR ./app/build
+   - ls -ladR app/
 #   - mv app/build/reports/* public
   artifacts:
     paths:
