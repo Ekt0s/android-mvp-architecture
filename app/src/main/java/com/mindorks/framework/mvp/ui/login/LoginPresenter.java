@@ -52,14 +52,17 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
             getMvpView().onError(R.string.empty_email);
             return;
         }
-        if (!CommonUtils.isEmailValid(email)) {
+
+        if (!isEmailValid(email)) {
             getMvpView().onError(R.string.invalid_email);
             return;
         }
+
         if (password == null || password.isEmpty()) {
             getMvpView().onError(R.string.empty_password);
             return;
         }
+
         getMvpView().showLoading();
 
         getCompositeDisposable().add(getDataManager()
@@ -102,6 +105,10 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
                         }
                     }
                 }));
+    }
+
+    protected boolean isEmailValid(String email) {
+        return CommonUtils.isEmailValid(email);
     }
 
     @Override

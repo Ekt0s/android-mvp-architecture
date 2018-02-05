@@ -15,6 +15,7 @@
 
 package com.mindorks.framework.mvp.ui.login;
 
+import com.mindorks.framework.mvp.R;
 import com.mindorks.framework.mvp.data.DataManager;
 import com.mindorks.framework.mvp.data.network.model.LoginRequest;
 import com.mindorks.framework.mvp.data.network.model.LoginResponse;
@@ -32,8 +33,11 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.TestScheduler;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by amitshekhar on 02/02/17.
@@ -59,9 +63,11 @@ public class LoginPresenterTest {
         mTestScheduler = new TestScheduler();
         TestSchedulerProvider testSchedulerProvider = new TestSchedulerProvider(mTestScheduler);
         mLoginPresenter = new LoginPresenter<>(
-            mMockDataManager,
-            testSchedulerProvider,
-            compositeDisposable);
+                mMockDataManager,
+                testSchedulerProvider,
+                compositeDisposable);
+
+        mLoginPresenter = spy(mLoginPresenter);
         mLoginPresenter.onAttach(mMockLoginMvpView);
     }
 
@@ -87,6 +93,72 @@ public class LoginPresenterTest {
         verify(mMockLoginMvpView).openMainActivity();
     }
 
+    @Test
+    public void testServerLoginErrorMessageWithEmptyPassword() throws Exception {
+
+        String email = "dummy@gmail.com";
+        String password = "";
+
+        mLoginPresenter.onServerLoginClick(email, password);
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).onError(R.string.empty_password);
+    }
+
+    @Test
+    public void testServerLoginErrorMessageWithNullPassword() throws Exception {
+
+        String email = "dummy@gmail.com";
+        String password = null;
+
+        mLoginPresenter.onServerLoginClick(email, password);
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).onError(R.string.empty_password);
+    }
+
+    @Test
+    public void testServerLoginErrorMessageWithNullEmail() throws Exception {
+
+        String email = null;
+        String password = "";
+
+        mLoginPresenter.onServerLoginClick(email, password);
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).onError(R.string.empty_email);
+    }
+
+    @Test
+    public void testServerLoginErrorMessageWithEmptyEmail() throws Exception {
+
+        String email = "";
+        String password = "";
+
+        mLoginPresenter.onServerLoginClick(email, password);
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).onError(R.string.empty_email);
+    }
+
+    @Test
+    public void testServerLoginErrorMessageWithInvalidEmail() throws Exception {
+
+        String email = "dummy@gmail.com";
+        String password = "password";
+
+        when(mLoginPresenter.isEmailValid(anyString())).thenReturn(false);
+
+        mLoginPresenter.onServerLoginClick(email, password);
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).onError(R.string.invalid_email);
+    }
 
     @After
     public void tearDown() throws Exception {
