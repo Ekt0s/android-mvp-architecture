@@ -160,6 +160,28 @@ public class LoginPresenterTest {
         verify(mMockLoginMvpView).onError(R.string.invalid_email);
     }
 
+    @Test
+    public void testGoogleLoginSucceed() throws Exception {
+        final String googleUserID = "test1";
+        final String idToken = "test1";
+
+        LoginResponse loginResponse = new LoginResponse();
+
+        // When
+        doReturn(Observable.just(loginResponse))
+                .when(mMockDataManager)
+                .doGoogleLoginApiCall(new LoginRequest.
+                        GoogleLoginRequest(googleUserID, idToken));
+
+        mLoginPresenter.onGoogleLoginClick();
+
+        mTestScheduler.triggerActions();
+
+        verify(mMockLoginMvpView).showLoading();
+        verify(mMockLoginMvpView).hideLoading();
+        verify(mMockLoginMvpView).openMainActivity();
+    }
+
     @After
     public void tearDown() throws Exception {
         mLoginPresenter.onDetach();
